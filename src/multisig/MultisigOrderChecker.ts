@@ -259,7 +259,7 @@ export const checkMultisigOrder = async (
 
             const destAddress = formatAddressAndUrl(info.dest, isTestnet);
             actionString += `<div>Send ${allBalance ? 'ALL BALANCE' : fromNano(info.value.coins)} TON to ${destAddress}</div>`
-            actionString += `<div>${parseActionBody(messageRelaxed.body)}</div>`
+            actionString += `<div>${await parseActionBody(messageRelaxed.body)}</div>`
             if (sendMode) {
                 actionString += `<div>Send mode: ${sendModeString.join(', ')}.</div>`
             }
