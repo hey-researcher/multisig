@@ -65,7 +65,7 @@ export const checkMultisigOrder = async (
 
     const signersFormatted = [];
     for (const signer of parsedData.signers) {
-        signersFormatted.push(await getAddressFormat(signer, isTestnet));
+        signersFormatted.push(getAddressFormat(signer, isTestnet));
     }
 
     // Check in multisig
@@ -139,7 +139,7 @@ export const checkMultisigOrder = async (
             const slice = cell.beginParse();
             const parsed = JettonMinter.parseMintMessage(slice);
             assert(parsed.internalMessage.forwardPayload.remainingBits === 0 && parsed.internalMessage.forwardPayload.remainingRefs === 0, 'Mint forward payload not supported');
-            const toAddress = await formatAddressAndUrl(parsed.toAddress, isTestnet)
+            const toAddress = formatAddressAndUrl(parsed.toAddress, isTestnet)
             return `Mint ${parsed.internalMessage.jettonAmount} jettons (in units) to ${toAddress}; ${fromNano(parsed.tonAmount)} TON for gas`;
         } catch (e) {
         }
@@ -154,7 +154,7 @@ export const checkMultisigOrder = async (
         try {
             const slice = cell.beginParse();
             const parsed = JettonMinter.parseChangeAdmin(slice);
-            const newAdminAddress = await formatAddressAndUrl(parsed.newAdminAddress, isTestnet)
+            const newAdminAddress = formatAddressAndUrl(parsed.newAdminAddress, isTestnet)
             return `Change Admin to ${newAdminAddress}`;
         } catch (e) {
         }
@@ -178,7 +178,7 @@ export const checkMultisigOrder = async (
             const parsed = JettonMinter.parseTransfer(slice);
             if (parsed.customPayload) throw new Error('Transfer custom payload not supported');
             assert(parsed.forwardPayload.remainingBits === 0 && parsed.forwardPayload.remainingRefs === 0, 'Transfer forward payload not supported');
-            const toAddress = await formatAddressAndUrl(parsed.toAddress, isTestnet)
+            const toAddress = formatAddressAndUrl(parsed.toAddress, isTestnet)
             return `Transfer ${parsed.jettonAmount} jettons (in units) from multisig to user ${toAddress};`;
         } catch (e) {
         }
@@ -187,7 +187,7 @@ export const checkMultisigOrder = async (
         try {
             const slice = cell.beginParse();
             const parsed = JettonMinter.parseCallTo(slice, JettonMinter.parseSetStatus);
-            const userAddress = await formatAddressAndUrl(parsed.toAddress, isTestnet)
+            const userAddress = formatAddressAndUrl(parsed.toAddress, isTestnet)
             const lockType = intToLockType(parsed.action.newStatus);
             return `Lock jetton wallet of user ${userAddress}. Set status "${lockType}" - "${lockTypeToDescription(lockType)}"; ${fromNano(parsed.tonAmount)} TON for gas`;
         } catch (e) {
@@ -198,8 +198,8 @@ export const checkMultisigOrder = async (
             const parsed = JettonMinter.parseCallTo(slice, JettonMinter.parseTransfer);
             if (parsed.action.customPayload) throw new Error('Force transfer custom payload not supported');
             assert(parsed.action.forwardPayload.remainingBits === 0 && parsed.action.forwardPayload.remainingRefs === 0, 'Force transfer forward payload not supported');
-            const fromAddress = await formatAddressAndUrl(parsed.toAddress, isTestnet)
-            const toAddress = await formatAddressAndUrl(parsed.action.toAddress, isTestnet)
+            const fromAddress = formatAddressAndUrl(parsed.toAddress, isTestnet)
+            const toAddress = formatAddressAndUrl(parsed.action.toAddress, isTestnet)
             return `Force transfer ${parsed.action.jettonAmount} jettons (in units) from user ${fromAddress} to ${toAddress}; ${fromNano(parsed.tonAmount)} TON for gas`;
         } catch (e) {
         }
@@ -208,7 +208,7 @@ export const checkMultisigOrder = async (
             const slice = cell.beginParse();
             const parsed = JettonMinter.parseCallTo(slice, JettonMinter.parseBurn);
             if (parsed.action.customPayload) throw new Error('Burn custom payload not supported');
-            const userAddress = await formatAddressAndUrl(parsed.toAddress, isTestnet)
+            const userAddress = formatAddressAndUrl(parsed.toAddress, isTestnet)
             return `Force burn ${parsed.action.jettonAmount} jettons (in units) from user ${userAddress}; ${fromNano(parsed.tonAmount)} TON for gas`;
         } catch (e) {
         }
@@ -257,9 +257,9 @@ export const checkMultisigOrder = async (
 
             const info: CommonMessageInfoRelaxedInternal = messageRelaxed.info as any;
 
-            const destAddress = await formatAddressAndUrl(info.dest, isTestnet);
+            const destAddress = formatAddressAndUrl(info.dest, isTestnet);
             actionString += `<div>Send ${allBalance ? 'ALL BALANCE' : fromNano(info.value.coins)} TON to ${destAddress}</div>`
-            actionString += `<div>${await parseActionBody(messageRelaxed.body)}</div>`
+            actionString += `<div>${parseActionBody(messageRelaxed.body)}</div>`
             if (sendMode) {
                 actionString += `<div>Send mode: ${sendModeString.join(', ')}.</div>`
             }
@@ -280,7 +280,7 @@ export const checkMultisigOrder = async (
             actionString += '<div>New signers:</div>'
             for (let i = 0; i < newSigners.length; i++) {
                 const signer = newSigners[i];
-                const addressString = await formatAddressAndUrl(signer, isTestnet)
+                const addressString = formatAddressAndUrl(signer, isTestnet)
                 actionString += (`<div>#${i + 1} - ${addressString}</div>`);
             }
 
@@ -288,7 +288,7 @@ export const checkMultisigOrder = async (
             if (newProposers.length > 0) {
                 for (let i = 0; i < newProposers.length; i++) {
                     const proposer = newProposers[i];
-                    const addressString = await formatAddressAndUrl(proposer, isTestnet)
+                    const addressString = formatAddressAndUrl(proposer, isTestnet)
                     actionString += (`<div>#${i + 1} - ${addressString}</div>`);
                 }
             } else {

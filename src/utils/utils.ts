@@ -27,21 +27,23 @@ export const explorerUrl = (address: string, isTestnet: boolean) => {
 
 const addressCache: {[key: string]: string} = {};
 
-export const getAddressFormat = async (address: Address, isTestnet: boolean): Promise<AddressInfo> => {
+export const getAddressFormat = (address: Address, isTestnet: boolean): AddressInfo => {
     const raw = address.toRawString();
 
     let friendly = addressCache[raw];
     if (!friendly) {
-        const result = await sendToIndex('addressBook', {address: raw}, isTestnet);
-        friendly = result[raw].user_friendly;
+        friendly = address.toString({
+            bounceable: false,
+            testOnly: isTestnet
+        });
         addressCache[raw] = friendly;
     }
 
     return Address.parseFriendly(friendly);
 }
 
-export const formatAddressAndUrl = async (address: Address, isTestnet: boolean) => {
-    const f = await getAddressFormat(address, isTestnet);
+export const formatAddressAndUrl = (address: Address, isTestnet: boolean) => {
+    const f = getAddressFormat(address, isTestnet);
     return makeAddressLink(f);
 }
 

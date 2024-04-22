@@ -136,11 +136,11 @@ export const checkMultisig = async (
 
     const signersFormatted = [];
     for (const signer of signers) {
-        signersFormatted.push(await getAddressFormat(signer, isTestnet));
+        signersFormatted.push(getAddressFormat(signer, isTestnet));
     }
     const proposersFormatted = [];
     for (const proposer of proposers) {
-        proposersFormatted.push(await getAddressFormat(proposer, isTestnet));
+        proposersFormatted.push(getAddressFormat(proposer, isTestnet));
     }
 
     // Get-methods
