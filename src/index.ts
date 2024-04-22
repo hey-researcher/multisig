@@ -17,6 +17,7 @@ import {storeStateInit} from "@ton/core/src/types/StateInit";
 import {MyNetworkProvider, sendToIndex} from "./utils/MyNetworkProvider";
 import {Order} from "./multisig/Order";
 import {JettonWallet} from "./jetton/JettonWallet";
+import {Dns} from "./dns/Dns";
 
 // UI COMMON
 
@@ -964,6 +965,27 @@ const orderTypes: OrderType[] = [
             }
         }
     },
+
+    {
+        name: "Change DNS record",
+        fields: {
+            dnsAddress: {
+                name: 'DNS Address',
+                type: 'Address'
+            },
+            address: {
+                name: 'Address',
+                type: 'Address'
+            },
+        },
+        makeMessage: async (values): Promise<MakeMessageResult> => {
+            return {
+                toAddress: values.dnsAddress,
+                tonAmount: DEFAULT_AMOUNT,
+                body: await Dns.changeDnsRecord(values.address.address)
+            }
+        }
+    }
 ]
 
 const getOrderTypesHTML = (): string => {
