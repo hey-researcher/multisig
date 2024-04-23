@@ -13,6 +13,7 @@ import {MultisigInfo} from "./MultisigChecker";
 import {MyNetworkProvider, sendToIndex} from "../utils/MyNetworkProvider";
 import {intToLockType, JettonMinter, lockTypeToDescription} from "../jetton/JettonMinter";
 import {CommonMessageInfoRelaxedInternal} from "@ton/core/src/types/CommonMessageInfoRelaxed";
+import {Dns} from "../dns/Dns";
 
 export interface MultisigOrderInfo {
     address: AddressInfo;
@@ -213,8 +214,15 @@ export const checkMultisigOrder = async (
         } catch (e) {
         }
 
-        throw new Error('Unsupported action')
+        try {
+            const slice = cell.beginParse();
+            const parsed = Dns.parseCallTo(slice);
+            const newAddress = formatAddressAndUrl(parsed.newAddress, isTestnet)
+            return `Change DNS record to ${newAddress}.`;
+        } catch (e) {
+        }
 
+        throw new Error('Unsupported action')
     }
 
     let parsedActions: string[] = [];

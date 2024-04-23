@@ -1,4 +1,4 @@
-import { Address, Cell, Contract, beginCell } from "@ton/core";
+import { Address, Cell, Contract, Slice, beginCell } from "@ton/core";
 import {Op} from "./DnsConstants";
 
 
@@ -27,5 +27,22 @@ export class Dns implements Contract {
           .endCell()
       )
       .endCell();
+  }
+
+  static parseCallTo(slice: Slice) {
+    const op = slice.loadUint(32);
+    if (op !== Op.change_dns_record) throw new Error('Invalid op');
+
+    const queryId = slice.loadUint(64);
+    const ref = slice.loadRef();
+    const refSlice = ref.asSlice();
+    refSlice.skip(16); // skip addr
+
+    const newAddress = refSlice.loadAddress();
+
+    return {
+      queryId,
+      newAddress
+    };
   }
 }
